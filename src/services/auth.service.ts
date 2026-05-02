@@ -378,8 +378,8 @@ export class AuthService {
 
     try {
       const result = await db.query<StaffRecordWithLockout>(
-        `SELECT id, branch_id, brand_id, email, password_hash, name, role, 
-                failed_logins, locked_at, is_active, employee_id, last_login_at, 
+        `SELECT id, branch_id, email, password_hash, name, role,
+                failed_logins, locked_at, is_active, last_login_at,
                 created_at, updated_at
          FROM staff
          WHERE email = $1`,

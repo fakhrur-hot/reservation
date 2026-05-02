@@ -129,7 +129,7 @@ export interface CustomerRecordWithLockout extends CustomerRecord {
 export interface StaffRecord {
   id: string;
   branch_id: string;
-  brand_id: string | null;
+  brand_id?: string | null;
   email: string;
   password_hash: string;
   name: string;
@@ -137,7 +137,7 @@ export interface StaffRecord {
   failed_logins: number;
   locked_at: Date | null;
   is_active: boolean;
-  employee_id: string | null;
+  employee_id?: string | null;
   last_login_at: Date | null;
   created_at: Date;
   updated_at: Date;

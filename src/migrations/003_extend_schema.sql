@@ -46,6 +46,9 @@ ALTER TABLE customers ADD COLUMN IF NOT EXISTS locked_at      TIMESTAMPTZ;
 ALTER TABLE staff ADD COLUMN IF NOT EXISTS failed_logins   INTEGER     DEFAULT 0;
 ALTER TABLE staff ADD COLUMN IF NOT EXISTS locked_at       TIMESTAMPTZ;
 ALTER TABLE staff ADD COLUMN IF NOT EXISTS last_login_at   TIMESTAMPTZ;
+ALTER TABLE staff ADD COLUMN IF NOT EXISTS employee_id     VARCHAR(50);
+ALTER TABLE staff ADD COLUMN IF NOT EXISTS brand_id        UUID;
+ALTER TABLE staff ADD COLUMN IF NOT EXISTS login_count     INTEGER NOT NULL DEFAULT 0;
 
 -- ---------------------------------------------------------------------------
 -- reservations — decoration, occasion, promo, cake, session fields

@@ -91,6 +91,9 @@ CREATE TABLE IF NOT EXISTS staff (
   failed_logins INTEGER      DEFAULT 0,
   locked_at     TIMESTAMPTZ,
   last_login_at TIMESTAMPTZ,
+  login_count   INTEGER      NOT NULL DEFAULT 0,
+  employee_id   VARCHAR(50),
+  brand_id      UUID,
   created_at    TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at    TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_staff_branch FOREIGN KEY (branch_id) REFERENCES branches(id) ON DELETE CASCADE
