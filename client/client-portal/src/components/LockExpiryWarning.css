@@ -1,0 +1,180 @@
+/**
+ * LockExpiryWarning Component Styles
+ * 
+ * Yellow background styling with warning icon for lock expiry warning.
+ */
+
+/* Container */
+.lock-expiry-warning {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  background: #fef9c3; /* Yellow-50 */
+  border: 1px solid #fde047; /* Yellow-400 */
+  border-radius: 12px;
+  margin: 16px 0;
+  animation: slideIn 0.3s ease;
+}
+
+.lock-expiry-warning--expired {
+  background: #fef2f2; /* Red-50 */
+  border-color: #fecaca; /* Red-400 */
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Icon */
+.lock-expiry-warning__icon {
+  flex-shrink: 0;
+  font-size: 24px;
+  line-height: 1;
+}
+
+/* Content */
+.lock-expiry-warning__content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Title */
+.lock-expiry-warning__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #854d0e; /* Yellow-800 */
+  margin-bottom: 4px;
+}
+
+.lock-expiry-warning--expired .lock-expiry-warning__title {
+  color: #991b1b; /* Red-800 */
+}
+
+/* Message */
+.lock-expiry-warning__message {
+  font-size: 13px;
+  color: #713f12; /* Yellow-900 */
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.lock-expiry-warning--expired .lock-expiry-warning__message {
+  color: #7f1d1d; /* Red-900 */
+}
+
+.lock-expiry-warning__message p {
+  margin: 0;
+}
+
+.lock-expiry-warning__message p + p {
+  margin-top: 4px;
+}
+
+/* Timer */
+.lock-expiry-warning__timer {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 12px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 8px;
+}
+
+.lock-expiry-warning__timer-value {
+  font-size: 20px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #854d0e;
+  letter-spacing: 1px;
+}
+
+.lock-expiry-warning__timer-label {
+  font-size: 12px;
+  color: #a16207;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Actions */
+.lock-expiry-warning__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Buttons */
+.lock-expiry-warning__btn {
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: none;
+  min-height: 40px;
+}
+
+.lock-expiry-warning__btn--primary {
+  background: #e85d26;
+  color: #fff;
+}
+
+.lock-expiry-warning__btn--primary:hover:not(:disabled) {
+  background: #cf4e1e;
+}
+
+.lock-expiry-warning__btn--primary:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.lock-expiry-warning__btn--secondary {
+  background: #fff;
+  color: #374151;
+  border: 1.5px solid #e5e7eb;
+}
+
+.lock-expiry-warning__btn--secondary:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .lock-expiry-warning {
+    padding: 14px 16px;
+    gap: 10px;
+  }
+
+  .lock-expiry-warning__icon {
+    font-size: 20px;
+  }
+
+  .lock-expiry-warning__title {
+    font-size: 14px;
+  }
+
+  .lock-expiry-warning__message {
+    font-size: 12px;
+  }
+
+  .lock-expiry-warning__timer-value {
+    font-size: 18px;
+  }
+
+  .lock-expiry-warning__actions {
+    flex-direction: column;
+  }
+
+  .lock-expiry-warning__btn {
+    width: 100%;
+  }
+}

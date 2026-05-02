@@ -1,0 +1,422 @@
+/* â”€â”€ Floor Plan Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+:root {
+  --status-available: #22c55e;
+  --status-locked:    #f59e0b;
+  --status-reserved:  #3b82f6;
+  --status-occupied:  #ef4444;
+}
+
+.floor-plan {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+  background: var(--bg-base);
+  min-height: 100vh;
+}
+
+.floor-plan--loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+/* â”€â”€ Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+.floor-plan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.floor-plan-header h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.floor-plan-subtitle {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 4px 0 0;
+}
+
+.floor-plan-status {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.ws-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: var(--bg-elevated);
+}
+
+.ws-indicator--connected {
+  color: var(--status-available);
+}
+
+.ws-indicator--disconnected {
+  color: var(--status-occupied);
+}
+
+.ws-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* â”€â”€ Filters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+.floor-plan-filters {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.filter-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pill {
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pill:hover {
+  border-color: var(--text-secondary);
+  background: var(--bg-elevated);
+}
+
+.pill--active {
+  background: var(--accent, #e85d26);
+  color: #fff;
+  border-color: var(--accent, #e85d26);
+}
+
+/* â”€â”€ Legend â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+.floor-plan-legend {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding: 12px 0;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.legend-label {
+  font-weight: 500;
+}
+
+/* â”€â”€ Error & Warning Messages â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+.floor-plan-error {
+  padding: 12px 16px;
+  background: rgba(239, 68, 68, 0.1);
+  border-left: 4px solid var(--status-occupied);
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--status-occupied);
+}
+
+.floor-plan-error button {
+  padding: 4px 8px;
+  background: transparent;
+  border: 1px solid currentColor;
+  color: currentColor;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.floor-plan-error button:hover {
+  background: currentColor;
+  color: white;
+}
+
+.floor-plan-warning {
+  padding: 12px 16px;
+  background: rgba(245, 158, 11, 0.1);
+  border-left: 4px solid var(--status-locked);
+  border-radius: 4px;
+  font-size: 13px;
+  color: var(--status-locked);
+}
+
+.floor-plan-empty {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+/* â”€â”€ Table Grid â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+.floor-plan-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.floor-plan-section-block {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md, 12px);
+  overflow: hidden;
+}
+
+.floor-plan-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border);
+}
+
+.floor-plan-section-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.floor-plan-section-count {
+  font-size: 12px;
+  color: var(--text-muted);
+  background: var(--bg-surface);
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+}
+
+.floor-plan-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  padding: 16px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* â”€â”€ Responsive Design â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+/* Tablet landscape (1024px and below) */
+@media (max-width: 1024px) {
+  .floor-plan {
+    padding: 20px;
+    gap: 20px;
+  }
+
+  .floor-plan-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 14px;
+  }
+
+  .floor-plan-header h2 {
+    font-size: 20px;
+  }
+}
+
+/* Tablet portrait (768px and below) */
+@media (max-width: 768px) {
+  .floor-plan {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .floor-plan-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding-bottom: 12px;
+  }
+
+  .floor-plan-header h2 {
+    font-size: 18px;
+  }
+
+  .floor-plan-subtitle {
+    font-size: 11px;
+  }
+
+  .floor-plan-status {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .ws-indicator {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+
+  .floor-plan-filters {
+    gap: 12px;
+  }
+
+  .filter-pills {
+    gap: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+    /* hide scrollbar but keep scrollability */
+    scrollbar-width: none;
+  }
+
+  .filter-pills::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pill {
+    /* prevent pills from shrinking on scroll */
+    flex-shrink: 0;
+    /* touch-friendly minimum tap target */
+    min-height: 36px;
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .floor-plan-legend {
+    gap: 12px;
+    padding: 8px 0;
+  }
+
+  .legend-item {
+    font-size: 11px;
+  }
+
+  .floor-plan-grid {
+    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+    gap: 12px;
+  }
+
+  .floor-plan-error,
+  .floor-plan-warning {
+    font-size: 12px;
+    padding: 10px 12px;
+  }
+}
+
+/* Mobile (480px and below) */
+@media (max-width: 480px) {
+  .floor-plan {
+    padding: 12px;
+    gap: 14px;
+  }
+
+  .floor-plan-header h2 {
+    font-size: 16px;
+  }
+
+  .floor-plan-filters {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .filter-group label {
+    font-size: 11px;
+  }
+
+  .floor-plan-legend {
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .floor-plan-grid {
+    /* 2-column grid on small phones */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .floor-plan-empty {
+    padding: 32px 16px;
+    font-size: 13px;
+  }
+}
+
+/* Very small phones (360px and below) */
+@media (max-width: 360px) {
+  .floor-plan {
+    padding: 10px;
+  }
+
+  .floor-plan-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+}

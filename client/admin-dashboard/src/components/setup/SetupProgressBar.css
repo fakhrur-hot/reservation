@@ -1,0 +1,142 @@
+.setup-progress-bar {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  padding: 30px 40px;
+  color: white;
+}
+
+.progress-steps {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  position: relative;
+}
+
+.step-indicator {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 8px;
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.progress-step.complete .step-indicator {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: white;
+}
+
+.progress-step.current .step-indicator {
+  background: var(--bg-surface);
+  color: #e85d26;
+  border-color: white;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.progress-step.pending .step-indicator {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.step-icon {
+  display: block;
+}
+
+.step-number {
+  display: block;
+}
+
+.step-label {
+  font-size: 12px;
+  text-align: center;
+  max-width: 100px;
+  line-height: 1.2;
+  opacity: 0.9;
+}
+
+.progress-step.pending .step-label {
+  opacity: 0.6;
+}
+
+.progress-bar-container {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--bg-surface);
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  text-align: center;
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+  .setup-progress-bar {
+    padding: 20px 24px;
+  }
+
+  .progress-steps {
+    margin-bottom: 16px;
+  }
+
+  .step-indicator {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+
+  .step-label {
+    font-size: 10px;
+    max-width: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  .setup-progress-bar {
+    padding: 16px;
+  }
+
+  .progress-steps {
+    margin-bottom: 12px;
+  }
+
+  .step-indicator {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  .step-label {
+    font-size: 9px;
+    max-width: 60px;
+  }
+
+  .progress-text {
+    font-size: 12px;
+  }
+}

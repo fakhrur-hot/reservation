@@ -1,0 +1,325 @@
+/* â”€â”€ TableCard Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+/*
+ * CSS custom properties are defined in FloorPlan.css (:root).
+ * TableCard.css relies on those variables being present in the page.
+ * If TableCard is used outside FloorPlan, ensure the variables are available.
+ */
+
+/* â”€â”€ Card Base â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+.table-card {
+  position: relative;
+  padding: 16px;
+  border: 2px solid;
+  border-radius: 12px;
+  background: var(--bg-surface);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  /* Ensure focus outline is visible for keyboard navigation */
+  outline-offset: 2px;
+}
+
+.table-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.table-card:focus-visible {
+  outline: 2px solid #e85d26;
+}
+
+/* â”€â”€ Status-Specific Hover Tints â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+.table-card--available:hover {
+  border-color: #22c55e;
+  background: rgba(34, 197, 94, 0.02);
+}
+
+.table-card--locked:hover {
+  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.02);
+}
+
+.table-card--reserved:hover {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.02);
+}
+
+.table-card--occupied:hover {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.02);
+}
+
+/* â”€â”€ Feature Badges (top-right corner) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+.table-card-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  line-height: 1.2;
+}
+
+.table-card-badge--window {
+  background: rgba(100, 180, 255, 0.2);
+  color: #2563eb;
+}
+
+.table-card-badge--accessible {
+  background: rgba(34, 197, 94, 0.2);
+  color: #16a34a;
+}
+
+/* â”€â”€ Content Layout â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+/* ── Table Name Watermark ──────────────────────────────────────────────────── */
+
+.table-card::before {
+  content: attr(data-table-name);
+  position: absolute;
+  inset: 0;
+  font-size: clamp(32px, 8vw, 56px);
+  font-weight: 900;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(0, 0, 0, 0.08);
+  text-align: center;
+  word-break: break-word;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  overflow: hidden;
+  /* Subtle rotation for visual interest */
+  transform: rotate(-12deg) scale(1.15);
+  z-index: 0;
+  text-rendering: optimizeLegibility;
+  letter-spacing: -0.02em;
+}
+
+/* ── Content Layout ────────────────────────────────────────────────────────── */
+
+.table-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+/* â”€â”€ Name â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+.table-card-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  /* Prevent long names from overflowing */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* â”€â”€ Capacity â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+.table-card-capacity {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* â”€â”€ Status Badge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+.table-card-status {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 4px;
+  width: fit-content;
+}
+
+/* â”€â”€ Decoration Indicator â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+.table-card-decoration {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  background: rgba(219, 39, 119, 0.08);
+  border: 1px solid rgba(219, 39, 119, 0.2);
+  border-radius: 12px;
+  width: fit-content;
+  font-size: 11px;
+  font-weight: 500;
+  color: #be185d;
+}
+
+.table-card-decoration-icon {
+  font-size: 11px;
+  line-height: 1;
+}
+
+.table-card-decoration-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80px;
+}
+
+.table-card-decoration-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+/* â”€â”€ Action Buttons â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+.table-card-clear,
+.table-card-select,
+.table-card-walkin {
+  width: 100%;
+  margin-top: 4px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  /* Touch-friendly minimum tap target */
+  min-height: 36px;
+}
+
+.table-card-clear {
+  background: #ef4444;
+  color: white;
+}
+
+.table-card-clear:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.table-card-clear:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.table-card-walkin {
+  background: #10b981;
+  color: white;
+}
+
+.table-card-walkin:hover:not(:disabled) {
+  background: #059669;
+}
+
+.table-card-walkin:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.table-card-select {
+  background: #22c55e;
+  color: white;
+}
+
+.table-card-select:hover {
+  background: #16a34a;
+}
+
+/* â”€â”€ Responsive: Tablet (768px and below) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+@media (max-width: 768px) {
+  .table-card {
+    padding: 12px;
+  }
+
+  .table-card-name {
+    font-size: 13px;
+  }
+
+  .table-card-capacity {
+    font-size: 11px;
+  }
+
+  .table-card-clear,
+  .table-card-select,
+  .table-card-walkin {
+    min-height: 44px;
+    font-size: 11px;
+    padding: 10px 12px;
+  }
+}
+
+/* â”€â”€ Responsive: Mobile (480px and below) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+@media (max-width: 480px) {
+  .table-card {
+    padding: 10px;
+  }
+
+  .table-card-badge {
+    font-size: 10px;
+    padding: 3px 6px;
+    top: 6px;
+    right: 6px;
+  }
+
+  .table-card-name {
+    font-size: 12px;
+  }
+
+  .table-card-capacity {
+    font-size: 10px;
+  }
+
+  .table-card-status {
+    font-size: 10px;
+    padding: 3px 6px;
+  }
+
+  .table-card-decoration {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+
+  .table-card-decoration-label {
+    max-width: 60px;
+  }
+
+  .table-card-clear,
+  .table-card-select {
+    min-height: 44px;
+    font-size: 11px;
+    letter-spacing: 0;
+  }
+}
+
+/* â”€â”€ Responsive: Very small phones (360px and below) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+@media (max-width: 360px) {
+  .table-card {
+    padding: 8px;
+  }
+
+  .table-card-name {
+    font-size: 11px;
+  }
+}

@@ -1,0 +1,32 @@
+/* ── AdminSettingsPage ─────────────────────────────────────────────────────── */
+
+.admin-settings-container {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.settings-sidebar {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  position: sticky;
+  top: 24px;
+}
+
+.sidebar-search { padding: 12px; border-bottom: 1px solid var(--border); }
+.search-input { width: 100%; padding: 8px 12px; font-size: 13px; }
+
+.settings-main {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  .admin-settings-container { grid-template-columns: 1fr; }
+  .settings-sidebar { position: static; }
+}

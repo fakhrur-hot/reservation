@@ -1,0 +1,100 @@
+.floor-plan-management {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.global-stats-header {
+  padding: 24px 24px 0 24px;
+  background: var(--bg-surface);
+}
+
+.floor-plan-tabs {
+  display: flex;
+  gap: 12px;
+  padding: 16px 24px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.tab-button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tab-button:hover {
+  background: var(--bg-hover);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.tab-button.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+  box-shadow: 0 4px 12px rgba(232, 93, 38, 0.3);
+}
+
+.floor-plan-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Redundant header hiding */
+.floor-plan-content .page-header {
+  display: none;
+}
+
+.floor-plan-content .stats-row {
+  display: none;
+}
+
+/* Stats Styling (Copied and adapted from TableSetupPage.css) */
+.stats-row { 
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 12px; 
+}
+
+.stat-card {
+  flex: 1;
+  min-width: 140px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  padding: 16px;
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-green { color: #4ade80; }
+.stat-red { color: #f87171; }
+.stat-purple { color: #a855f7; }
+.stat-muted { color: var(--text-muted); }

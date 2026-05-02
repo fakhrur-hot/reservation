@@ -1,0 +1,71 @@
+.maintenance-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+.maintenance-container {
+  text-align: center;
+  color: white;
+  padding: 40px 20px;
+  max-width: 500px;
+}
+
+.maintenance-icon {
+  font-size: 80px;
+  margin-bottom: 24px;
+  display: block;
+}
+
+.maintenance-page h1 {
+  font-size: 32px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  letter-spacing: -0.5px;
+}
+
+.maintenance-message {
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0 0 12px 0;
+  opacity: 0.95;
+}
+
+.maintenance-subtitle {
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+  opacity: 0.8;
+}
+
+@media (max-width: 600px) {
+  .maintenance-page {
+    padding: 20px;
+  }
+
+  .maintenance-container {
+    padding: 20px;
+  }
+
+  .maintenance-icon {
+    font-size: 60px;
+    margin-bottom: 16px;
+  }
+
+  .maintenance-page h1 {
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+
+  .maintenance-message {
+    font-size: 14px;
+  }
+
+  .maintenance-subtitle {
+    font-size: 12px;
+  }
+}

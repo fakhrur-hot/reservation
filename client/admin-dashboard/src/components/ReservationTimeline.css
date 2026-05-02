@@ -1,0 +1,410 @@
+/* ── ReservationTimeline ─────────────────────────────────────────────────── */
+
+.tl-root {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  overflow: hidden;
+  font-size: 13px;
+  color: #e5e7eb;
+}
+
+/* ── Header (time axis) ── */
+.tl-header {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  height: 40px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  overflow: visible;
+}
+
+.tl-header-label {
+  width: 120px;
+  min-width: 120px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6b7280;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tl-header-track {
+  flex: 1;
+  position: relative;
+  overflow: visible;
+  /* Extra top padding so labels have room */
+  margin-top: 2px;
+}
+
+.tl-marker {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 11px;
+  color: #6b7280;
+  white-space: nowrap;
+  pointer-events: none;
+  /* Prevent first/last labels from being clipped */
+  z-index: 1;
+}
+
+/* ── Body ── */
+.tl-body {
+  overflow-y: auto;
+  max-height: 480px;
+}
+
+.tl-loading,
+.tl-empty {
+  padding: 40px;
+  text-align: center;
+  color: #6b7280;
+}
+
+/* ── Row ── */
+.tl-row {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  min-height: 56px;
+  transition: background 0.15s;
+  position: relative;
+}
+
+.tl-row:last-child {
+  border-bottom: none;
+}
+
+.tl-row:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* ── Table label ── */
+.tl-row-label {
+  width: 120px;
+  min-width: 120px;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.tl-table-name {
+  font-weight: 600;
+  color: #f1f5f9;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tl-table-cap {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+/* ── Track ── */
+.tl-track {
+  flex: 1;
+  position: relative;
+  cursor: default;
+  min-height: 56px;
+}
+
+.tl-grid-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.04);
+  pointer-events: none;
+}
+
+.tl-empty-row {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  padding-left: 16px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.15);
+  pointer-events: none;
+}
+
+/* ── Now indicator ── */
+.tl-now-indicator {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.tl-now-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e85d26;
+  margin-top: -4px;
+  flex-shrink: 0;
+}
+
+.tl-now-line {
+  flex: 1;
+  width: 2px;
+  background: rgba(232, 93, 38, 0.6);
+}
+
+/* ── Reservation block ── */
+.tl-block {
+  position: absolute;
+  border-radius: 4px;
+  border: 1px solid;
+  padding: 4px 8px;
+  font-size: 11px;
+  line-height: 1.2;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  box-sizing: border-box;
+  z-index: 10;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.tl-block:hover {
+  filter: brightness(1.2);
+  transform: scaleY(1.04);
+  z-index: 20;
+}
+
+.tl-block-ref {
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+}
+
+.tl-block-name {
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  opacity: 0.85;
+}
+
+.tl-block-guests {
+  font-size: 11px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  opacity: 0.75;
+}
+
+/* ── Portal Tooltip (renders in document.body, never clipped) ── */
+.tl-tooltip-portal {
+  position: fixed;
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  min-width: 240px;
+  max-width: 300px;
+  z-index: 99999;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255,255,255,0.04);
+  pointer-events: none;
+  overflow: hidden;
+  transform-origin: bottom center;
+}
+
+/* Zoom-in on appear — Syncfusion-style spring bounce */
+@keyframes tl-zoom-in {
+  0%   { opacity: 0; transform: scale(0.55); }
+  65%  { opacity: 1; transform: scale(1.04); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.tl-tooltip--zoom {
+  animation: tl-zoom-in 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Arrow */
+.tl-tooltip-arrow {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+}
+
+.tl-tooltip-arrow--below {
+  bottom: -7px;
+  border-top: 7px solid #0f172a;
+}
+
+.tl-tooltip-arrow--above {
+  top: -7px;
+  border-bottom: 7px solid #0f172a;
+}
+
+.tl-tooltip-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-left: 3px solid;
+}
+
+.tl-tooltip-ref {
+  font-size: 12px;
+  font-weight: 700;
+  color: #f1f5f9;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.3px;
+}
+
+.tl-tooltip-status-badge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid;
+}
+
+.tl-tooltip-section {
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.tl-tooltip-section:last-child {
+  border-bottom: none;
+}
+
+.tl-tooltip-section--deco {
+  background: rgba(251, 191, 36, 0.06);
+}
+
+.tl-tooltip-section--cake {
+  background: rgba(168, 85, 247, 0.06);
+}
+
+.tl-tooltip-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  font-size: 12px;
+  color: #94a3b8;
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.tl-tooltip-row:last-child {
+  margin-bottom: 0;
+}
+
+.tl-tooltip-row--name {
+  color: #e2e8f0;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.tl-tooltip-row--highlight {
+  color: #fbbf24;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.tl-tooltip-row--notes {
+  color: #94a3b8;
+  font-size: 11px;
+  font-style: italic;
+}
+
+.tl-tooltip-customer-name {
+  color: #f1f5f9;
+  font-weight: 700;
+}
+
+.tl-tooltip-promo {
+  font-family: 'Courier New', monospace;
+  color: #a78bfa;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+/* ── Legend ── */
+.tl-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 12px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.tl-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #6b7280;
+  text-transform: capitalize;
+}
+
+.tl-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.tl-legend-now {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #e85d26;
+  flex-shrink: 0;
+}
+
+/* ── Responsive ── */
+@media (max-width: 720px) {
+  .tl-header-label,
+  .tl-row-label {
+    width: 72px;
+    min-width: 72px;
+    padding: 0 8px;
+  }
+
+  .tl-table-name {
+    font-size: 11px;
+  }
+
+  .tl-block-name {
+    display: none;
+  }
+
+  .tl-body {
+    max-height: 360px;
+  }
+}
