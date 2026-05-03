@@ -1,0 +1,233 @@
+name: Build & Publish Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  # ── Build Docker image and push to GHCR ─────────────────────────────────────
+  docker:
+    name: Build & Push Docker Image
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.meta.outputs.tags }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ── Build release zip packages ───────────────────────────────────────────────
+  packages:
+    name: Build Release Packages
+    runs-on: ubuntu-latest
+    needs: docker
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install API dependencies
+        run: npm ci --omit=dev
+
+      - name: Build API (TypeScript)
+        run: npm run build
+
+      - name: Build admin dashboard
+        run: |
+          cd client/admin-dashboard
+          npm ci
+          npm run build
+
+      - name: Build client portal
+        run: |
+          cd client/client-portal
+          npm ci
+          npm run build
+
+      # ── Docker package ────────────────────────────────────────────────────────
+      - name: Build Docker installation package
+        run: |
+          VERSION="${GITHUB_REF_NAME}"
+          PKG="sejiwa-booking-${VERSION}-docker"
+          mkdir -p "dist/${PKG}"
+
+          # Core files
+          cp docker-compose.prod.yml "dist/${PKG}/docker-compose.yml"
+          cp .env.example            "dist/${PKG}/.env.example"
+          cp install/docker/install.sh   "dist/${PKG}/install.sh"
+          cp install/docker/uninstall.sh "dist/${PKG}/uninstall.sh"
+          chmod +x "dist/${PKG}/install.sh" "dist/${PKG}/uninstall.sh"
+
+          # Patch image tag in compose file to use the exact release version
+          sed -i "s|:latest|:${VERSION}|g" "dist/${PKG}/docker-compose.yml"
+
+          # README
+          cat > "dist/${PKG}/README.md" <<EOF
+          # Sejiwa Booking System ${VERSION} — Docker Install
+
+          ## Requirements
+          - Docker 24+
+          - Docker Compose v2
+
+          ## Quick Start
+          \`\`\`bash
+          bash install.sh
+          \`\`\`
+
+          Then open http://localhost:3001 and complete the setup wizard.
+
+          ## Manage
+          \`\`\`bash
+          docker compose ps
+          docker compose logs -f app
+          docker compose down
+          \`\`\`
+
+          ## Uninstall
+          \`\`\`bash
+          bash uninstall.sh
+          \`\`\`
+          EOF
+
+          cd dist
+          zip -r "${PKG}.zip" "${PKG}/"
+          echo "DOCKER_PKG=${PKG}.zip" >> $GITHUB_ENV
+
+      # ── Linux package ─────────────────────────────────────────────────────────
+      - name: Build Linux installation package
+        run: |
+          VERSION="${GITHUB_REF_NAME}"
+          PKG="sejiwa-booking-${VERSION}-linux"
+          mkdir -p "dist/${PKG}"
+
+          # Pre-built application files
+          cp -r dist/           "dist/${PKG}/dist/"       2>/dev/null || true
+          cp -r src/migrations  "dist/${PKG}/src/migrations"
+          cp -r src/seeds       "dist/${PKG}/src/seeds"   2>/dev/null || true
+          cp    package.json    "dist/${PKG}/"
+          cp    package-lock.json "dist/${PKG}/"
+          cp    .env.example    "dist/${PKG}/.env.example"
+          cp    install/linux/install.sh   "dist/${PKG}/install.sh"
+          cp    install/linux/uninstall.sh "dist/${PKG}/uninstall.sh"
+          chmod +x "dist/${PKG}/install.sh" "dist/${PKG}/uninstall.sh"
+
+          # Copy built frontend assets
+          mkdir -p "dist/${PKG}/client/admin-dashboard"
+          mkdir -p "dist/${PKG}/client/client-portal"
+          cp -r client/admin-dashboard/dist "dist/${PKG}/client/admin-dashboard/dist"
+          cp -r client/client-portal/dist   "dist/${PKG}/client/client-portal/dist"
+
+          # Production node_modules (no devDeps)
+          cp -r node_modules "dist/${PKG}/node_modules"
+
+          # README
+          cat > "dist/${PKG}/README.md" <<EOF
+          # Sejiwa Booking System ${VERSION} — Linux Install
+
+          ## Requirements
+          - Ubuntu 22.04 LTS or Debian 12
+          - sudo / root access
+
+          ## Quick Start
+          \`\`\`bash
+          sudo bash install.sh
+          \`\`\`
+
+          The script installs and configures:
+          - Node.js 20
+          - PostgreSQL 15
+          - Redis 7
+          - nginx (reverse proxy on port 80)
+          - systemd service (auto-start on boot)
+
+          Then open http://YOUR_SERVER_IP and complete the setup wizard.
+
+          ## Manage
+          \`\`\`bash
+          systemctl status sejiwa
+          journalctl -u sejiwa -f
+          systemctl restart sejiwa
+          \`\`\`
+
+          ## Uninstall
+          \`\`\`bash
+          sudo bash uninstall.sh
+          \`\`\`
+          EOF
+
+          cd dist
+          zip -r "${PKG}.zip" "${PKG}/"
+          echo "LINUX_PKG=${PKG}.zip" >> $GITHUB_ENV
+
+      # ── Create GitHub Release ─────────────────────────────────────────────────
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Sejiwa Booking System ${{ github.ref_name }}"
+          body: |
+            ## Sejiwa Booking System ${{ github.ref_name }}
+
+            ### Installation Packages
+
+            | Package | Description |
+            |---------|-------------|
+            | `sejiwa-booking-${{ github.ref_name }}-docker.zip` | Docker Compose install — recommended for most servers |
+            | `sejiwa-booking-${{ github.ref_name }}-linux.zip` | Direct Linux install — Ubuntu 22.04 / Debian 12 |
+
+            ### Docker Install (recommended)
+            ```bash
+            unzip sejiwa-booking-${{ github.ref_name }}-docker.zip
+            cd sejiwa-booking-${{ github.ref_name }}-docker
+            bash install.sh
+            ```
+
+            ### Linux Direct Install
+            ```bash
+            unzip sejiwa-booking-${{ github.ref_name }}-linux.zip
+            cd sejiwa-booking-${{ github.ref_name }}-linux
+            sudo bash install.sh
+            ```
+
+            ### Docker Image
+            ```bash
+            docker pull ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+            ```
+          files: |
+            dist/${{ env.DOCKER_PKG }}
+            dist/${{ env.LINUX_PKG }}
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
