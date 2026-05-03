@@ -1,6 +1,8 @@
 /**
  * API client for Sneat Dashboard.
  * All requests include X-Branch-ID header and Bearer token.
+ * Automatically refreshes the access token on 401 using the HTTP-only refresh
+ * token cookie, then retries the original request once.
  */
 
 const BASE = '/api';
@@ -21,7 +23,32 @@ function getHeaders(): HeadersInit {
   return headers;
 }
 
-async function request<T>(path: string, options?: RequestInit): Promise<T> {
+/** Attempt a silent token refresh. Returns the new access token or null. */
+async function refreshAccessToken(): Promise<string | null> {
+  try {
+    const res = await fetch('/auth/refresh', { method: 'POST', credentials: 'include' });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (data.accessToken) {
+      localStorage.setItem('staff_token', data.accessToken);
+      return data.accessToken;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/** Redirect to login and clear all session data. */
+function forceLogout() {
+  localStorage.removeItem('staff_token');
+  localStorage.removeItem('staff_role');
+  localStorage.removeItem('branch_id');
+  localStorage.removeItem('branch_name');
+  window.location.href = '/';
+}
+
+async function request<T>(path: string, options?: RequestInit, _isRetry = false): Promise<T> {
   const finalHeaders = { ...getHeaders(), ...(options?.headers ?? {}) } as Record<string, string>;
   
   // Only add Content-Type if there's a body and it's not already set
@@ -31,13 +58,32 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
   const res = await fetch(`${BASE}${path}`, {
     ...options,
+    credentials: 'include', // needed so the refresh_token cookie is sent
     headers: finalHeaders,
   });
+
   if (!res.ok) {
-    if (res.status === 401) {
-      localStorage.removeItem('staff_token');
-      window.location.href = '/';
+    // On 401: try a silent token refresh once, then retry the original request
+    if (res.status === 401 && !_isRetry) {
+      const newToken = await refreshAccessToken();
+      if (newToken) {
+        return request<T>(path, options, true);
+      }
+      // Refresh failed — session is truly expired
+      forceLogout();
+      throw new Error('Session expired. Please log in again.');
     }
+
+    // On 404 with a branch path: the stored branch_id is stale — force re-login
+    if (res.status === 404 && path.includes('/branches/')) {
+      const body = await res.json().catch(() => ({}));
+      const msg: string = body.error ?? '';
+      if (msg.toLowerCase().includes('branch')) {
+        forceLogout();
+        throw new Error('Branch not found. Please log in again.');
+      }
+    }
+
     const body = await res.json().catch(() => ({}));
     throw new Error(body.error ?? `HTTP ${res.status}`);
   }

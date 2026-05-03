@@ -41,7 +41,26 @@ export function createSetupGuardMiddleware(pool: Pool) {
         "SELECT value FROM app_config WHERE key = 'setup_completed'"
       );
 
-      const isComplete = result.rows.length > 0 && result.rows[0].value === 'true';
+      const appConfigComplete = result.rows.length > 0 && result.rows[0].value === 'true';
+
+      // Also verify at least one real branch has setup_complete = true.
+      // app_config can be set to 'true' even when the branch row was never
+      // fully committed (e.g. wizard crashed mid-flight), which lets the
+      // dashboard open against an incomplete database.
+      let branchSetupComplete = false;
+      if (appConfigComplete) {
+        const branchResult = await pool.query(
+          `SELECT 1 FROM branches
+           WHERE setup_complete = true
+             AND is_active = true
+             AND name != '[Restaurant_Name]'
+             AND code != '[BRANCH_CODE]'
+           LIMIT 1`
+        );
+        branchSetupComplete = branchResult.rows.length > 0;
+      }
+
+      const isComplete = appConfigComplete && branchSetupComplete;
 
       // Update cache
       setupCompleteCache = isComplete;

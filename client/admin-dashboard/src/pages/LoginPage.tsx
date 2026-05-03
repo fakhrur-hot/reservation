@@ -20,6 +20,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
       const res = await fetch('/auth/staff/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // ensures the refresh_token cookie is stored
         body: JSON.stringify({ email, password }),
       });
 

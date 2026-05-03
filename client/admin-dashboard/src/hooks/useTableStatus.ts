@@ -144,9 +144,21 @@ export function useTableStatus(branchId: string): UseTableStatusReturn {
         console.log('[useTableStatus] Disconnected', { branchId, code: event.code, reason: event.reason });
         setIsConnected(false);
 
-        // Auth failure — token is invalid/expired; retrying won't help
+        // Auth failure — token is invalid/expired; attempt a silent refresh before giving up
         if (event.code === 4001) {
-          setError('Session expired. Please log in again.');
+          fetch('/auth/refresh', { method: 'POST', credentials: 'include' })
+            .then(r => r.ok ? r.json() : null)
+            .then(data => {
+              if (data?.accessToken) {
+                localStorage.setItem('staff_token', data.accessToken);
+                // Reset retry counter and reconnect with the new token
+                reconnectAttemptsRef.current = 0;
+                connect();
+              } else {
+                setError('Session expired. Please log in again.');
+              }
+            })
+            .catch(() => setError('Session expired. Please log in again.'));
           return;
         }
 
@@ -306,7 +318,18 @@ export function useTableStatusWithInitial(
       ws.onclose = (event: CloseEvent) => {
         setIsConnected(false);
         if (event.code === 4001) {
-          setError('Session expired. Please log in again.');
+          fetch('/auth/refresh', { method: 'POST', credentials: 'include' })
+            .then(r => r.ok ? r.json() : null)
+            .then(data => {
+              if (data?.accessToken) {
+                localStorage.setItem('staff_token', data.accessToken);
+                reconnectAttemptsRef.current = 0;
+                connect();
+              } else {
+                setError('Session expired. Please log in again.');
+              }
+            })
+            .catch(() => setError('Session expired. Please log in again.'));
           return;
         }
         if (reconnectAttemptsRef.current < MAX_RECONNECT_ATTEMPTS) {

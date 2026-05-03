@@ -243,7 +243,7 @@ export class SetupService {
 
       // 8. Mark setup complete
       logger.info({ step: 8 }, 'Marking setup complete');
-      await this.markSetupComplete(client);
+      await this.markSetupComplete(client, branchId);
       logger.info({ step: 8 }, 'Setup marked complete');
 
       // Clear setup progress
@@ -646,12 +646,20 @@ export class SetupService {
 
   /**
    * Mark setup as complete.
+   * Sets app_config flag AND marks the branch row as setup_complete = true.
    */
-  private async markSetupComplete(client: PoolClient): Promise<void> {
+  private async markSetupComplete(client: PoolClient, branchId: string): Promise<void> {
     await client.query(
       `INSERT INTO app_config (key, value) VALUES ($1, $2)
        ON CONFLICT (key) DO UPDATE SET value = $2`,
       ['setup_completed', 'true']
+    );
+
+    // Also mark the branch itself as setup_complete so the setup guard
+    // can verify a real branch exists (not just the app_config flag).
+    await client.query(
+      'UPDATE branches SET setup_complete = true WHERE id = $1',
+      [branchId]
     );
   }
 }
